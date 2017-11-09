@@ -1,0 +1,20 @@
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+<header><% include ../views/partials/_header %>
+</header>
+    <% for(const key in urls) { %>
+  <form method="POST" action="/urls/<%=key%>/delete">><button>Delete</button></form>
+  <form method = "GET" action="/urls/<%=key%>"><button>edit</button></form>
+    <li><%= key + ': ' + urls[key] %></li>
+    <%} %>
+    <a href="url">Click here!</a>
+</body>
+
+
+
+
+
+</html>
