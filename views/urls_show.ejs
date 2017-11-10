@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-
+<header><% include ../views/partials/_header %>
+</header>
 <form method = "POST" action= "/urls/<%=shortURL%>">
   shortURL: <%= shortURL %><br>
   <input type="text" name= "longURL" value="<%= urlDatabase[shortURL]%>">
