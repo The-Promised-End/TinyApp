@@ -82,24 +82,33 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   let shortURL = generateRandomString();
   let longURL = req.body["longURL"];
   urlDatabase[shortURL] = longURL;
-  console.log(shortURL);
   res.redirect("/urls/");
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["user_id"] };
-  res.render("urls_new", templateVars);
+  let user = users[req.cookies["user_id"]];
+  let templateVars = { user: user,
+                       urls: urlDatabase, };
+  //const {email} = req.body
+  //const foundUser = findUser
+  if(user) {
+    res.render("urls_new", templateVars
+    )
+  } else {res.redirect("/login");
+}
+
 });
 
 
 app.get("/urls/:id", (req, res) => {
-  let user = findUser(req.cookies["user_id"]);
+  let user = users[req.cookies["user_id"]];
   let templateVars = { shortURL: req.params.id,
-                       userdb: users}
+                       urls : urlDatabase,
+                       user: user,
+                     }
   res.render("urls_show", templateVars)
 
 })
@@ -140,7 +149,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie();
+  res.clearCookie("user_id");
   res.redirect("/login");
 })
 
