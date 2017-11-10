@@ -30,7 +30,6 @@ function generateRandomString() {
   return Math.random().toString(36).substr(2,6);
 }
 
-
 function emailCheck(email) {
   for (user in users) {
     if (users[user]["email"] === email) {
@@ -77,7 +76,6 @@ app.get("/urls", (req, res) => {
   let templateVars = {
     user: user,
     urls: urlDatabase,
-    userdb: users
   };
 
   res.render("urls_index", templateVars);
@@ -97,7 +95,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-// takes cookie id and go thru users and return that id
 
 app.get("/urls/:id", (req, res) => {
   let user = findUser(req.cookies["user_id"]);
@@ -140,16 +137,6 @@ app.post("/login", (req, res) => {
     res.send({error: 'the password and user do not match'});
   }
 
-  // for (user in users) {
-
-  //   const user = users[user];
-
-  //   if (user.email === req.body.email && user.password === req.body.password) {
-  //       res.cookie("user_id",user.id)
-  //       res.redirect("/");
-  //   }
-  // }
-  // res.status(401).send({error: 'the password and user do not match'});
 });
 
 app.post("/logout", (req, res) => {
@@ -158,7 +145,6 @@ app.post("/logout", (req, res) => {
 })
 
 app.get("/register", (req,res) => {
-//  console.log('get register: ', users)
   res.render("register");
 })
 
@@ -166,7 +152,6 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   let user_id = generateRandomString();
- // console.log('post register, before!', users)
 
   if (email === "" || password === "") {
     res.status(400);
@@ -185,14 +170,10 @@ app.post("/register", (req, res) => {
     };
 
     res.cookie("user_id", user_id)
-    //console.log(res.cookie());
     console.log(users);
     res.redirect("/urls");
 
   }
-
-
-  //console.log('post register, after!', users)
 
 })
 
@@ -200,12 +181,6 @@ app.get("/login", (req, res) => {
 
   res.render("login")
 })
-
-// app.post("/urls/:id", (req, res) => {
-//   let id = req.params.id
-//   res.redirect(/urls/{$id})
-// }
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
