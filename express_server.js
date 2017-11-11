@@ -3,13 +3,10 @@ var app = express();
 const bcrypt = require('bcrypt');
 var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-//const cookieParser = require("cookie-parser");
 var cookieSession = require('cookie-session')
 
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set("view engine", "ejs");
-//app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['secretKey'],
@@ -137,8 +134,7 @@ app.get("/urls/new", (req, res) => {
   let user = users[req.session["user_id"]];
   let templateVars = { user: user,
     urls: urlDatabase };
-  //const {email} = req.body
-  //const foundUser = findUser
+
   if(user) {
     res.render("urls_new", templateVars
     );
@@ -162,8 +158,8 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   let user = users[req.session["user_id"]];
+
   if(urlDatabase[shortURL].userID === user.id) {
-    //to update the url with the longurl
     urlDatabase[shortURL].longURL = req.body.longURL;
     res.redirect("/urls/");
   } else {
@@ -174,7 +170,6 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL);
   res.redirect(longURL.longURL);
 });
 
@@ -182,36 +177,31 @@ app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.params.id;
   let user = users[req.session["user_id"]];
 
-
   if(urlDatabase[shortURL].userID === user.id) {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
-    console.log(user.id);
   } else {
     res.status(403);
     res.send('403: Not authorized to delete');
   }
 });
 
+app.get("/login", (req, res) => {
+
+  res.render("login");
+});
+
 app.post("/login", (req, res) => {
-
   const { email, password } = req.body;
-
   const user = findUserByEmail(email);
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
-    console.log(user.password);
     req.session.user_id = user.id;
     res.redirect("/urls");
   } else {
     res.status(403);
     res.send({error: 'the password and user do not match'});
   }
-});
-
-app.post("/logout", (req, res) => {
-  req.session.user_id = null;
-  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {
@@ -239,8 +229,6 @@ app.post("/register", (req, res) => {
       password: bcrypt.hashSync(password, 10),
     };
     req.session.user_id = user_id;
-    console.log("new user ");
-    console.log(users);
 
     res.redirect("/urls");
 
@@ -248,10 +236,11 @@ app.post("/register", (req, res) => {
 
 });
 
-app.get("/login", (req, res) => {
-
-  res.render("login");
+app.post("/logout", (req, res) => {
+  req.session.user_id = null;
+  res.redirect("/login");
 });
+
 
 app.listen(PORT, () => {
   console.log('Example app listening on port ${PORT}!');
