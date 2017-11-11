@@ -8,7 +8,7 @@
     <% for(const key in urls) { %>
   <form method="POST" action="/urls/<%=key%>/delete">><button>Delete</button></form>
   <form method = "GET" action="/urls/<%=key%>"><button>edit</button></form>
-    <li><%= key + ': ' + urls[key] %></li>
+    <li><%= key + ': ' + urls[key].longURL %></li>
     <%} %>
     <a href="url">Click here!</a>
 </body>

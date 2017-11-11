@@ -22,8 +22,13 @@ const users = {
 
 }
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {"longURL" : "http://www.lighthouselabs.ca",
+             "userID" : "userRandomID",
+           },
+
+  "9sm5xK": {"longURL" : "http://www.google.com",
+             "userID" : "user2RandomID",
+           }
 };
 
 function generateRandomString() {
@@ -33,8 +38,6 @@ function generateRandomString() {
 function emailCheck(email) {
   for (user in users) {
     if (users[user]["email"] === email) {
-      console.log(users[user]["email"]);
-      console.log(email);
       return true;
     }
   }
@@ -84,7 +87,12 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body["longURL"];
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: req.cookies.user_id
+  };
+
+  console.log(longURL)
   res.redirect("/urls/");
 });
 
@@ -121,15 +129,20 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
-  console.log(urlDatabase[req.params.shortURL]);
+  let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  let id = req.params.id;
-  delete urlDatabase[id];
-  res.redirect("/urls");
+  let shortURL = req.params.id;
+  let user = users[req.cookies["user_id"]];
+  if(urlDatabase[shortURL].userID === user.id) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls")
+  } else {
+    res.status(403);
+    res.send('403: Not authorized to delete');
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -179,7 +192,7 @@ app.post("/register", (req, res) => {
     };
 
     res.cookie("user_id", user_id)
-    console.log(users);
+
     res.redirect("/urls");
 
   }
