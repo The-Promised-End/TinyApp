@@ -51,6 +51,16 @@ function findUser(user_id) {
   }
 }
 
+function urlsForUser(id) {
+  let userURLs = {}
+  for (let shortURL in urlDatabase) {
+    if(urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userURLs
+}
+
 function findUserByEmail(email) {
     let foundUser = false;
     for (let id in users) {
@@ -74,14 +84,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-
-  let user = users[req.cookies["user_id"]];
+  let user = users[req.cookies["user_id"]] ;
+  if (!user) {
+    return res.redirect("/login")
+  }
+  let shortURL = req.params.id;
+  let longURL = req.body["longURL"]
   let templateVars = {
     user: user,
-    urls: urlDatabase,
+    urls: urlsForUser(user.id),
   };
-
   res.render("urls_index", templateVars);
+
 });
 
 app.post("/urls", (req, res) => {
@@ -136,8 +150,8 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL.longURL)
-  res.redirect(longURL.longURL);
+  console.log(longURL)
+  res.redirect(longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
