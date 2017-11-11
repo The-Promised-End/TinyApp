@@ -122,10 +122,16 @@ app.get("/urls/:id", (req, res) => {
 })
 
 app.post("/urls/:id", (req, res) => {
-  let shortURL = req.params.id;
-  let longURL = req.body["longURL"];
-  urlDatabase[shortURL] = longURL;
-  res.redirect("/urls");
+ let shortURL = req.params.id;
+ let user = users[req.cookies["user_id"]];
+  if(urlDatabase[shortURL].userID === user.id) {
+    //to update the url with the longurl
+    urlDatabase[shortURL].longURL =req.body.longURL;
+    res.redirect("/urls/")
+  } else {
+    res.status(403);
+    res.send('403: Not authorizerd to edit')
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -136,9 +142,12 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.params.id;
   let user = users[req.cookies["user_id"]];
+
+
   if(urlDatabase[shortURL].userID === user.id) {
     delete urlDatabase[shortURL];
     res.redirect("/urls")
+    console.log(user.id)
   } else {
     res.status(403);
     res.send('403: Not authorized to delete');
