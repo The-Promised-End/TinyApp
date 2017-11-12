@@ -1,6 +1,7 @@
 <header></header>
 <% if (user) { %>
   <p>Logged in as <%=user.id%></p>
+  <p><%= user.email%></p>
     <form action = "/logout" method="POST">
     <input type = "submit" value="Logout">
     </form>

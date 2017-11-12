@@ -1,6 +1,5 @@
 <html lang="en">
-<head>
-  <title>TinyApp</title>
+<head>TinyApp
 </head>
 <body>
 <header><% include ../views/partials/_header %>
@@ -10,7 +9,7 @@
   <form method = "GET" action="/urls/<%=key%>"><button>edit</button></form>
     <li><%= key + ': ' + urls[key].longURL %></li>
     <%} %>
-    <a href="url">Click here!</a>
+    <a href="/urls/new">Shorten URLs here!</a>
 </body>
 
 
