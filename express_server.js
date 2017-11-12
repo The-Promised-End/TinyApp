@@ -100,12 +100,12 @@ function findUserByEmail(email) {
 
 // specific routes
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
 
-  let user= users[req.session.user_id];
+  let user = users[req.session.user_id];
 
   if (!user) {
     return res.redirect("/login");
@@ -114,7 +114,8 @@ app.get("/urls", (req, res) => {
   let longURL = req.body["longURL"];
   let templateVars = {
     user: user,
-    urls: urlsForUser(user.id)
+    urls: urlsForUser(user.id),
+    email: findUserByEmail(user.email)
   };
   res.render("urls_index", templateVars);
 
